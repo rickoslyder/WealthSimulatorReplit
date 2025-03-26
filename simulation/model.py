@@ -90,10 +90,8 @@ class WealthDistributionModel(Model):
         )
         
         # Create agents
-        self._agent_list = []
         for _ in range(self.num_agents):
-            agent = EconomicAgent(self, initial_wealth)
-            self._agent_list.append(agent)
+            EconomicAgent(self, initial_wealth)
         
         # Create social network
         self._create_social_network()
