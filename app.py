@@ -150,7 +150,7 @@ else:
     credit_availability = preset_params['credit_availability']
 
 # Create tabs for different visualizations
-tab1, tab2, tab3, tab4 = st.tabs(["Simulation Results", "Wealth Distribution", "Economic Indicators", "Agent Details"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Simulation Results", "Wealth Distribution", "Economic Indicators", "Agent Details", "AI Analysis"])
 
 with tab1:
     st.header("Simulation Controls")
@@ -266,8 +266,15 @@ with tab1:
         st.session_state['inflation_history'] = inflation_history
         st.session_state['interest_rate_history'] = interest_rate_history
         st.session_state['unemployment_history'] = unemployment_history
+        st.session_state['top1_share_history'] = top1_share_history
+        st.session_state['top10_share_history'] = top10_share_history
+        st.session_state['bottom50_share_history'] = bottom50_share_history
         st.session_state['model'] = model
         st.session_state['years_simulated'] = years_to_simulate
+        
+        # Clear analysis cache when running a new simulation
+        if 'analysis_cache' in st.session_state:
+            st.session_state['analysis_cache'] = {}
     else:
         if 'simulation_run' not in st.session_state:
             st.info("Click 'Run Simulation' to start the wealth distribution simulation.")
@@ -439,3 +446,169 @@ with tab4:
             st.plotly_chart(fig_time, use_container_width=True)
     else:
         st.info("Run the simulation in the 'Simulation Results' tab to see agent details.")
+
+with tab5:
+    st.header("AI-Powered Analysis")
+    
+    if 'simulation_run' in st.session_state and st.session_state['simulation_run']:
+        # Check if Gemini API key is provided
+        if not initialize_gemini():
+            st.warning("⚠️ Gemini API key is required for AI analysis")
+            st.info("Please add your Gemini API key in the sidebar to enable AI-powered insights.")
+        else:
+            # Get simulation data from session state
+            model = st.session_state['model']
+            wealth_history = st.session_state['wealth_history']
+            gini_history = st.session_state['gini_history']
+            years_simulated = st.session_state['years_simulated']
+            gdp_history = st.session_state['gdp_history']
+            inflation_history = st.session_state['inflation_history']
+            interest_rate_history = st.session_state['interest_rate_history']
+            unemployment_history = st.session_state['unemployment_history']
+            top1_share_history = st.session_state.get('top1_share_history', [])
+            top10_share_history = st.session_state.get('top10_share_history', [])
+            bottom50_share_history = st.session_state.get('bottom50_share_history', [])
+            
+            # Create a dictionary with the current simulation parameters
+            current_params = {
+                'num_agents': num_agents,
+                'initial_wealth': 1000000,
+                'interest_rate': initial_interest_rate / 100,
+                'base_return_rate': base_return_rate / 100,
+                'income_volatility': income_volatility,
+                'inflation_rate': initial_inflation_rate / 100,
+                'risk_aversion_mean': risk_aversion_mean,
+                'time_preference_mean': time_preference_mean,
+                'consumption_preference_mean': consumption_preference_mean,
+                'tax_rate': tax_rate,
+                'wealth_tax_rate': wealth_tax_rate,
+                'ubi_amount': ubi_amount,
+                'social_influence_strength': social_influence_strength,
+                'max_loan_to_income_ratio': max_loan_to_income_ratio,
+                'credit_availability': credit_availability
+            }
+            
+            # Tabs for different types of analysis
+            analysis_tabs = st.tabs([
+                "Overall Summary", 
+                "Inequality Analysis", 
+                "Policy Implications", 
+                "Behavioral Insights", 
+                "Macroeconomic Trends", 
+                "Future Scenarios"
+            ])
+            
+            # Cache for storing generated analyses to avoid regenerating when switching tabs
+            if 'analysis_cache' not in st.session_state:
+                st.session_state['analysis_cache'] = {}
+            
+            # Helper function to get analysis with caching
+            def get_cached_analysis(analysis_type):
+                if analysis_type not in st.session_state['analysis_cache']:
+                    with st.spinner(f"Generating {analysis_type} analysis..."):
+                        analysis = get_llm_analysis(
+                            analysis_type=analysis_type,
+                            model=model,
+                            wealth_history=wealth_history,
+                            gini_history=gini_history,
+                            years_simulated=years_simulated,
+                            gdp_history=gdp_history,
+                            inflation_history=inflation_history,
+                            interest_rate_history=interest_rate_history,
+                            unemployment_history=unemployment_history,
+                            top1_share_history=top1_share_history,
+                            top10_share_history=top10_share_history,
+                            bottom50_share_history=bottom50_share_history,
+                            parameters=current_params
+                        )
+                        st.session_state['analysis_cache'][analysis_type] = analysis
+                return st.session_state['analysis_cache'][analysis_type]
+            
+            # Overall Summary
+            with analysis_tabs[0]:
+                st.subheader("Overall Simulation Summary")
+                summary = get_cached_analysis("summary")
+                st.markdown(summary)
+                
+                # Add option to regenerate analysis
+                if st.button("Regenerate Summary", key="regen_summary"):
+                    if "summary" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["summary"]
+                    st.rerun()
+            
+            # Inequality Analysis
+            with analysis_tabs[1]:
+                st.subheader("Wealth Inequality Analysis")
+                inequality_analysis = get_cached_analysis("inequality_analysis")
+                st.markdown(inequality_analysis)
+                
+                if st.button("Regenerate Inequality Analysis", key="regen_inequality"):
+                    if "inequality_analysis" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["inequality_analysis"]
+                    st.rerun()
+            
+            # Policy Implications
+            with analysis_tabs[2]:
+                st.subheader("Policy Implications")
+                policy_analysis = get_cached_analysis("policy_implications")
+                st.markdown(policy_analysis)
+                
+                if st.button("Regenerate Policy Analysis", key="regen_policy"):
+                    if "policy_implications" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["policy_implications"]
+                    st.rerun()
+            
+            # Behavioral Insights
+            with analysis_tabs[3]:
+                st.subheader("Behavioral Insights")
+                behavioral_analysis = get_cached_analysis("behavioral_insights")
+                st.markdown(behavioral_analysis)
+                
+                if st.button("Regenerate Behavioral Analysis", key="regen_behavioral"):
+                    if "behavioral_insights" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["behavioral_insights"]
+                    st.rerun()
+            
+            # Macroeconomic Trends
+            with analysis_tabs[4]:
+                st.subheader("Macroeconomic Trends")
+                macro_analysis = get_cached_analysis("macroeconomic_trends")
+                st.markdown(macro_analysis)
+                
+                if st.button("Regenerate Macroeconomic Analysis", key="regen_macro"):
+                    if "macroeconomic_trends" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["macroeconomic_trends"]
+                    st.rerun()
+            
+            # Future Scenarios
+            with analysis_tabs[5]:
+                st.subheader("Suggested Future Scenarios")
+                scenario_analysis = get_cached_analysis("future_scenarios")
+                st.markdown(scenario_analysis)
+                
+                if st.button("Regenerate Scenario Suggestions", key="regen_scenarios"):
+                    if "future_scenarios" in st.session_state['analysis_cache']:
+                        del st.session_state['analysis_cache']["future_scenarios"]
+                    st.rerun()
+            
+            # Add a button to clear the entire cache
+            if st.button("Regenerate All Analyses", type="secondary"):
+                st.session_state['analysis_cache'] = {}
+                st.rerun()
+                
+    else:
+        st.info("Run the simulation in the 'Simulation Results' tab to see AI-powered analysis.")
+        st.markdown("""
+        ### What to expect from AI analysis:
+        
+        The AI analysis provides the following insights about your simulation:
+        
+        - **Overall Summary**: Key patterns and dynamics from the simulation
+        - **Inequality Analysis**: Factors affecting wealth distribution and inequality
+        - **Policy Implications**: How policy choices impacted the economy
+        - **Behavioral Insights**: Effects of behavioral traits on economic outcomes
+        - **Macroeconomic Trends**: Analysis of GDP, inflation, and other indicators
+        - **Future Scenarios**: Suggested simulations to try next based on your results
+        
+        > Note: A Gemini API key is required for these insights. You can add this in the sidebar.
+        """)

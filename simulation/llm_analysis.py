@@ -200,19 +200,11 @@ def get_llm_analysis(analysis_type, model, wealth_history, gini_history, years_s
     # Prepare message for Gemini
     prompt = f"{system_prompt}\n\nHere is the simulation data to analyze:\n{data_text}"
     
-    # Safety settings
-    safety_settings = [
-        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-    ]
-    
+    # No safety settings as per request
     try:
         model = genai.GenerativeModel(
             model_name="gemini-2.0-flash",
-            generation_config=generation_config,
-            safety_settings=safety_settings
+            generation_config=generation_config
         )
         response = model.generate_content(prompt)
         return response.text
