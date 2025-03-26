@@ -8,6 +8,7 @@ dependencies = [
     "mesa>=3.0",
     "networkx>=3.4.2",
     "numpy>=2.2.4",
+    "openai>=1.68.2",
     "pandas>=2.2.3",
     "plotly>=6.0.1",
     "streamlit>=1.44.0",
