@@ -1,0 +1,1737 @@
+Based on the plan, spec and PRD below, help me build this wealth simulator:
+
+
+
+<PLAN>
+
+## **Title**  
+
+**Simulating a Society Where Everyone Starts with \$1,000,000: An Agent-Based Exploration of Macroeconomic, Credit, and Behavioral Dynamics**
+
+---
+
+## **Overview**  
+
+In this simulation, we reset every individual’s wealth to \$1,000,000 at the start and allow a century (100 years) of interaction under various economic, financial, policy, and behavioral conditions. By incorporating **Agent-Based Modeling (ABM),** we capture emergent phenomena—from **credit booms** to **behavioral herding**—that influence wealth distribution, social structures, and policy outcomes. This updated plan integrates macroeconomic feedback loops, credit market structures, social network effects, and robust calibration methods to ensure realism and policy relevance.
+
+---
+
+## **Objectives**
+
+1. **Primary Goal**  
+
+   - Examine how wealth distribution, inequality, and social dynamics evolve over 100 years if everyone begins equally wealthy.
+
+2. **Focus Areas**  
+
+   - **Economic Outcomes**  
+
+     - GDP growth, inflation, interest rate dynamics, employment, and inequality.  
+
+   - **Financial & Credit Dynamics**  
+
+     - Credit booms/busts, debt accumulation, default risks, and financial regulation.  
+
+   - **Social & Behavioral Influences**  
+
+     - Peer effects, herd behavior, risk/loss aversion, and time-inconsistent (hyperbolic) discounting.  
+
+   - **Government & Policy Impacts**  
+
+     - Taxation, public spending, macroprudential regulation, central bank interest rate policies.  
+
+   - **Resource & Technological Constraints**  
+
+     - Production capacity, environmental shocks, and technology-driven productivity changes.
+
+---
+
+## **Approach**
+
+- **Modeling Technique:** Agent-Based Modeling (ABM) in **Mesa (Python)**, leveraging `NumPy`, `pandas`, `networkx`, and other libraries for data manipulation, analysis, and visualization.  
+
+- **Enhanced Focus:**  
+
+  1. **Macroeconomic Layer:** Introduce a **central bank agent** or module that adjusts interest rates in response to inflation and unemployment, simulating real-world monetary policy.  
+
+  2. **Credit & Financial Markets:** Agents can borrow and lend subject to regulation and risk constraints, allowing for emergent credit cycles and defaults.  
+
+  3. **Behavioral & Network Effects:** Agents use psychologically realistic decision rules, including prospect theory, social comparison (“keeping up with the Joneses”), and herd behavior on a social network.  
+
+  4. **Calibration & Validation:** Use empirical data and calibration techniques (e.g., Approximate Bayesian Computation, method of simulated moments) to ground parameters in real-world values.
+
+---
+
+## **Model Design**
+
+### 1. Agents (Individuals)
+
+- **Demographics & Lifecycle Dynamics**  
+
+  - **Age:** Agents grow older each year, influencing labor participation, retirement, and shifting risk preferences.  
+
+  - **Birth & Death Process:** Optionally include population change; younger generations inherit or are “born” with new initial wealth if desired.  
+
+  - **Immigration/Emigration:** Model net flow of agents in/out of the society.
+
+- **Economic Attributes**  
+
+  - **Initial Wealth:** \$1,000,000 for all agents at the simulation start.  
+
+  - **Income Sources:** Wages, investments, business ownership, government benefits, and **credit-based** ventures.  
+
+  - **Consumption & Saving:** Vary preferences between necessity and luxury goods, with **positional (social) consumption** elements.  
+
+- **Financial & Credit Profiles**  
+
+  - **Borrowing Capacity:** Agents can apply for loans based on income, collateral, or credit history.  
+
+  - **Debt Accumulation & Default:** Missed payments or negative net worth can lead to default, influencing bank balance sheets.  
+
+  - **Regulatory Constraints:** Loan-to-value or debt-to-income limits, interest rate caps, etc.
+
+- **Psychological Traits**  
+
+  - **Risk & Loss Aversion (Prospect Theory):** Agents weigh losses more heavily, might hold losing assets longer, shy away from fair but risky gambles.  
+
+  - **Time Preference (Hyperbolic Discounting):** Present bias can lead to under-saving or impulsive spending.  
+
+  - **Behavioral Biases:** Overconfidence, anchoring, mental accounting, or herd tendencies.  
+
+  - **Work Motivation:** Shaped by wealth, age, and personal biases.
+
+- **Social Networks**  
+
+  - **Network Structure:** Could be small-world, scale-free, or empirical distributions of connections.  
+
+  - **Peer Effects & Herding:** Agents observe neighbors’ behavior (consumption, saving/investing choices) and often imitate, amplifying bubbles or panics.
+
+---
+
+### 2. Decision-Making Processes
+
+- **Labor & Career Decisions**  
+
+  - Agents decide whether to enter the labor force, change jobs, retire, or start businesses, influenced by **wealth buffers, credit access**, and **macroeconomic conditions** (unemployment rate, wage levels).
+
+- **Consumption & Saving**  
+
+  - Agents allocate spending among necessities, luxuries, and investments.  
+
+  - **Social/positional utility**: Agents compare their consumption to a reference group, potentially overspending to “keep up.”  
+
+  - Inflation expectations shape the timing of major purchases.
+
+- **Investment & Credit**  
+
+  - Agents choose asset allocations (safe vs. risky, real estate vs. equities) based on **loss aversion, herd pressure,** and interest rates.  
+
+  - Optionally take on debt for major purchases or investments; risk of **default** if debt exceeds repayment ability.  
+
+  - Banks or a credit market evaluate loan requests with regulatory constraints (capital requirements, etc.).
+
+- **Social Interactions**  
+
+  - Agents share market information with neighbors, influencing **buy/sell decisions** or shifting consumption norms.  
+
+  - Herd behavior: If enough neighbors adopt a particular asset or consumption pattern, an agent is more likely to follow.
+
+---
+
+### 3. Environmental & System-Level Factors
+
+- **Macroeconomic Systems**  
+
+  - **Central Bank Agent:** Adjusts interest rates to meet inflation/unemployment targets (e.g., a Taylor rule).  
+
+  - **Inflation & Price Formation:** Aggregate supply and demand feed into price levels. High inflation erodes real wealth; deflation encourages hoarding.  
+
+  - **Business Cycle Feedback:** Booms foster easy credit and optimistic agents, while recessions see higher default rates and reduced credit availability.
+
+- **Government & Institutions**  
+
+  - **Taxation & Redistribution:** Income taxes, wealth taxes, social welfare, or universal basic income.  
+
+  - **Regulations & Macroprudential Policies:** Loan-to-value limits, capital requirements, stress tests for banks.  
+
+  - **Fiscal Policy:** Government spending or stimulus during downturns to stabilize the economy.
+
+- **Resource & Technological Constraints**  
+
+  - **Production Capacity:** Labor and resource constraints can lead to inflation or shortages if demand outstrips supply.  
+
+  - **Technology Shocks:** Automated industries or productivity leaps can reshape labor markets and wealth accumulation.  
+
+  - **External Shocks:** Disasters, pandemics, or geopolitical events that disrupt markets or supply chains.
+
+---
+
+## **Implementation Steps**
+
+1. **Set Up the Environment**  
+
+   - Install **Mesa**, `NumPy`, `pandas`, `networkx`, `matplotlib`, etc.  
+
+   - Optionally incorporate frameworks like **Plotly**, **Dash**, or **Streamlit** for live dashboards.
+
+2. **Define the Agent Class**  
+
+   - **Attributes:** Wealth, income, credit capacity, loss aversion, time preference, social network ties.  
+
+   - **Methods:**  
+
+     - **Labor**: Decide whether to work, retire, or switch careers.  
+
+     - **Consumption**: Determine spending on luxuries vs. necessities, factoring in peer consumption.  
+
+     - **Investment & Credit**: Borrowing decisions, asset allocation, default conditions.  
+
+     - **Behavioral Routines**: Prospect theory payoff evaluation, hyperbolic discounting for future rewards, etc.
+
+3. **Define the Model Class**  
+
+   - **Scheduler & Step Function:** In each time step, update the central bank’s interest rate policy, then let agents act (consume, invest, borrow, etc.).  
+
+   - **Credit Market**: Evaluate loan requests; track bank capital adequacy and respond to defaults.  
+
+   - **Macroeconomic Updates**: Calculate inflation, unemployment, GDP.  
+
+   - **Policy Modules**: Apply or vary taxation, government spending, or macroprudential rules.  
+
+   - **Data Collection**: Record wealth distribution, Gini coefficient, credit utilization, default rates, inflation, interest rates, etc.
+
+4. **Incorporate Social Networks & Peer Influence**  
+
+   - Construct or load a **network topology**. Each agent sees a subset of neighbors for social learning.  
+
+   - Model **herd thresholds**: e.g., if 30% of an agent’s neighbors invest in a certain stock, the agent invests too.  
+
+   - Add “positional utility” so that average consumption in a peer group influences each agent’s reference point.
+
+5. **Run the Simulation**  
+
+   - Decide on population size (e.g., 1,000, 10,000) for richer dynamics.  
+
+   - Each “year,” update macro conditions, adjust interest rates, let agents decide labor, consumption, borrowing, and investing.  
+
+   - Observe emergent patterns over 100 years, collecting time-series data and distribution metrics each step.
+
+6. **Performance & Calibration**  
+
+   - **Calibration:** Use real-world data on consumption, saving rates, default probabilities, historical Gini levels, etc. to set or tune parameters.  
+
+   - **Validation:** Compare emergent model outcomes (inequality, frequency of recessions, etc.) with known empirical benchmarks or stylized facts.  
+
+   - **Sensitivity Analysis:** Apply Sobol’ indices or other variance-based methods to find which parameters most affect outcomes.
+
+7. **Analyze Results**  
+
+   - **Wealth & Income Distributions:** Track how quickly wealth reconcentrates after the \$1,000,000 reset.  
+
+   - **Financial Stability Metrics:** Default rates, bank failures, credit expansion/contraction cycles.  
+
+   - **Macro Indicators:** GDP trends, unemployment rates, inflation, interest rates, and output volatility.  
+
+   - **Behavioral Insights:** Assess the impact of herd behavior, positional consumption, and biases on inequality or cyclical volatility.
+
+8. **Scenario Testing & Policy Experiments**  
+
+   - **Monetary Policy Variations:** High vs. low interest rate targets; “hawkish” vs. “dovish” central bank.  
+
+   - **Tax & Redistribution Regimes:** Progressive wealth taxes, universal basic income, or varying capital gains taxes.  
+
+   - **Regulatory Intensity:** Strict vs. lax lending standards, capital requirements for banks.  
+
+   - **Behavioral Interventions:** Education programs to reduce loss aversion or hyperbolic discounting.  
+
+   - **Resource Shocks & Tech Revolutions:** Sudden supply constraints or major automation breakthroughs.
+
+9. **Visualization & Reporting**  
+
+   - **Time-Series Graphs:** Plot wealth/income distribution, inflation, interest rates, and GDP across years.  
+
+   - **Network Visualizations:** Show evolving social ties and how information/behavior spreads (bubbles, panics).  
+
+   - **Interactive Dashboards:** Allow parameter tweaking in real-time to demonstrate how different setups alter outcomes.
+
+---
+
+## **Expected Insights**
+
+1. **Emergence of Inequality & Credit Cycles**  
+
+   - Even starting from universal \$1,000,000, differences in behavioral traits, social networks, and credit access may rapidly create **unequal wealth** distributions.
+
+2. **Macroeconomic Policy Effects**  
+
+   - Dynamic feedback between **central bank actions** (interest rates) and agent decisions (spending, borrowing) can generate **booms and busts**.  
+
+   - See whether stable, low inflation fosters smoother growth or if certain policies unintentionally exacerbate cycles.
+
+3. **Financial Stability & Regulation**  
+
+   - Assess how different **regulatory frameworks** (capital requirements, macroprudential tools) prevent or exacerbate credit booms and defaults.  
+
+   - Investigate how financial inclusion policies (e.g. microcredit) affect social mobility and overall economic outcomes.
+
+4. **Role of Behavioral Biases & Social Influence**  
+
+   - Document how **positional consumption** or herd investing leads to speculative bubbles or widespread defaults.  
+
+   - Gauge which biases have the largest effect on wealth outcomes and who (demographically) is most vulnerable.
+
+5. **Policy Intervention Efficacy**  
+
+   - Identify which tax or redistributive policies actually reduce inequality over time, and whether they do so without stifling entrepreneurial behavior or growth.
+
+---
+
+## **Visualization Examples**
+
+- **Wealth Distribution Over Time**: Histograms or density plots showing how an initially uniform distribution skews as the simulation progresses.  
+
+- **Credit & Debt Overhang**: Graphs of average household debt-to-income ratios and default rates, highlighting booms/busts.  
+
+- **Agent Trajectories**: Individual agent wealth paths (chosen samples) demonstrating successes, defaults, or stagnant outcomes due to biases.  
+
+- **Network Graphs**: Display how behaviors (e.g., a new investment fad) propagate among connected agents.
+
+---
+
+## **Conclusion**
+
+By integrating macroeconomic cycles, credit market structures, and psychologically realistic agents, this enhanced simulation illuminates the complex interplay between **policy, market dynamics, and human behavior**. Through iterative **calibration** and **validation** against empirical benchmarks, we can have confidence in the model’s ability to capture emergent phenomena—ranging from periodic financial crises to socially driven consumption booms. The simulation thus offers a robust platform for experimenting with various economic, regulatory, and social interventions to understand how best to manage or preempt wealth inequality, credit-fueled bubbles, and macroeconomic instability.
+
+---
+
+## **Next Steps**
+
+1. **Refine Agent Heterogeneity**  
+
+   - Introduce more nuanced trait distributions (e.g., some agents with high financial literacy vs. others with none).  
+
+   - Incorporate subpopulations with different discount rates or risk profiles.
+
+2. **Extend Calibration & Empirical Validation**  
+
+   - Gather real-world data (household finance surveys, credit default rates, inflation histories) to **fine-tune** the simulation.  
+
+   - Perform **out-of-sample** tests to confirm predictive power.
+
+3. **Parallelization & Scalability**  
+
+   - Scale to larger populations (10,000+ agents) and run extensive scenario analyses with distributed/cloud computing.
+
+4. **Advanced Policy Experiments**  
+
+   - Test the impact of exogenous shocks (pandemics, environmental disasters) with and without government interventions.  
+
+   - Vary central bank communication strategies or interest rate rules to see how they affect market stability.
+
+5. **Publish & Collaborate**  
+
+   - Make the **model code and data** open source for transparency and peer feedback.  
+
+   - Involve economists, behavioral scientists, and policymakers to refine assumptions and interpret findings.
+
+---
+
+**With these additions, your simulation plan robustly captures the interplay of macroeconomic policy, credit dynamics, and behavioral forces—providing a powerful platform to explore emergent inequality and social changes stemming from a universal \$1 million wealth reset.**
+
+</PLAN>
+
+
+
+<TECHNICAL SPEC>
+
+# **Technical Specification (10/10)**
+
+## **1. High-Level Architecture**
+
+1. **Simulation Environment**  
+
+   - **Framework**: Implemented in [Mesa](https://mesa.readthedocs.io/en/master/) (Python) or a similar ABM framework.  
+
+   - **Scheduler**: A Mesa `BaseScheduler` or `StagedActivation` that controls the order of agent actions each step.  
+
+   - **Data Collection**: Utilizes Mesa’s `DataCollector` or a custom mechanism to record distributional data and macro-level statistics at each timestep.  
+
+   - **Visualization**: Optionally integrated with **Plotly**, **Dash**, **Streamlit**, or Mesa’s built-in server for real-time charts and network displays.
+
+2. **Main Model Class**  
+
+   - **Name**: `WealthResetModel`.  
+
+   - **Responsibilities**:  
+
+     1. Create agents (households, banks, central bank, and optionally a production sector).  
+
+     2. Manage global parameters (inflation, interest rates, tax regimes, etc.).  
+
+     3. Execute the simulation flow each “year” (or discrete time step), including macroeconomic updates and agent actions.  
+
+3. **Agent Types**  
+
+   - **Household Agents**: Individuals with wealth, income, consumption/saving decisions, credit usage, and behavioral traits.  
+
+   - **Bank Agents**: Evaluate lending requests, manage loan defaults, and track capital buffers.  
+
+   - **Central Bank Agent**: Governs the base interest rate using a specified policy rule (Taylor rule, fixed rate, etc.).  
+
+   - **Production Sector / Firm Agents** (Optional but recommended): Determine labor demand, wages, and production output. This step clarifies how the real economy generates goods/services.
+
+---
+
+## **2. Simulation Parameters & Configuration**
+
+| **Parameter**                   | **Type**       | **Description**                                                                  | **Default/Range**                               |
+
+|--------------------------------|---------------|----------------------------------------------------------------------------------|-------------------------------------------------|
+
+| `N_households`                 | `int`         | Number of household agents                                                       | `1000`                                          |
+
+| `initial_wealth`               | `float`       | Initial wealth each household receives at time 0                                 | `1e6`                                           |
+
+| `birth_rate`                   | `float`       | Probability a new agent is “born” per timestep (if modeling population growth)   | `0.01` (optional)                               |
+
+| `death_rate`                   | `float`       | Probability an agent “dies” each timestep                                       | `0.01` (optional)                               |
+
+| `interest_rate_rule`           | `str`         | Monetary policy rule (`"taylor_rule"`, `"fixed_rate"`, etc.)                     | `"taylor_rule"`                                 |
+
+| `inflation_target`             | `float`       | Central bank’s target inflation                                                 | `0.02`                                          |
+
+| `credit_availability`          | `float`       | Ease of obtaining loans (0 = strict, 1 = lax)                                    | `[0.0, 1.0]`                                    |
+
+| `max_loan_to_value`            | `float`       | Maximum LTV ratio for loans                                                     | `0.8`                                           |
+
+| `loss_aversion`                | `float`       | Loss aversion coefficient (Prospect Theory)                                     | `2.0`                                           |
+
+| `discount_factors`             | `tuple`       | (β, δ) for hyperbolic discounting                                               | `(0.7, 0.95)`                                   |
+
+| `network_type`                 | `str`         | Social network type (`"small_world"`, `"scale_free"`, `"random"`)                | `"small_world"`                                 |
+
+| `peer_influence_threshold`     | `float`       | Fraction of neighbors adopting a behavior before agent follows (herding)         | `0.3`                                           |
+
+| `tax_policy`                   | `dict`        | Defines tax brackets, rates, or UBI parameters                                   | e.g., `{"type": "progressive"}`                |
+
+| `production_function`          | `str`         | Type of production function (e.g. `"Cobb-Douglas"`, `"Leontief"`, `"linear"`)     | `"Cobb-Douglas"`                                |
+
+| `alpha_production`             | `float`       | Capital share in production (for Cobb-Douglas)                                   | `0.3`                                           |
+
+| `simulation_steps`             | `int`         | Number of timesteps                                                              | `100`                                           |
+
+| `random_seed`                  | `int`         | Seed for reproducibility                                                         | `None` (or user-defined)                        |
+
+---
+
+## **3. Class Definitions & Responsibilities**
+
+### 3.1 **Central Bank Agent**
+
+- **Class Name**: `CentralBank`  
+
+- **Inheritance**: `mesa.Agent`  
+
+- **Attributes**:  
+
+  1. `policy_rule`: (Taylor, fixed, etc.)  
+
+  2. `current_interest_rate`: float  
+
+  3. `target_inflation`: float  
+
+  4. `alpha_inflation`, `alpha_unemployment`: Taylor-rule coefficients  
+
+  5. `neutral_rate`: The “natural” real interest rate (for Taylor rule calculations).
+
+- **Methods**:  
+
+  1. `step()`: Updates `current_interest_rate` based on the chosen rule. In a Taylor rule scenario:
+
+     ```python
+
+     def step(self):
+
+         inflation_gap = self.model.current_inflation - self.target_inflation
+
+         unemployment_gap = self.model.unemployment_rate - self.model.natural_unemployment
+
+         self.current_interest_rate = (
+
+             self.neutral_rate
+
+             + inflation_gap * self.alpha_inflation
+
+             + unemployment_gap * self.alpha_unemployment
+
+         )
+
+     ```
+
+  2. `publish_interest_rate()`: Makes the updated rate available to banks and households.
+
+### 3.2 **Bank Agent**
+
+- **Class Name**: `Bank`  
+
+- **Inheritance**: `mesa.Agent`  
+
+- **Attributes**:  
+
+  1. `capital_reserves`: float  
+
+  2. `loan_portfolio`: dict or list (storing `[borrower_id, principal, interest_rate, remaining_term]`).  
+
+  3. `risk_tolerance`: float (affects approvals).  
+
+  4. `credit_policy`: e.g., LTV limits, DTI thresholds, etc.  
+
+- **Methods**:  
+
+  1. `evaluate_loan_request(household, requested_amount) -> (approved_amount, rate)`: Considers DTI, LTV, `risk_tolerance`, sets a margin over the central bank’s rate.  
+
+  2. `collect_repayments()`: Aggregates monthly/annual debt service from borrowers; updates `capital_reserves`.  
+
+  3. `handle_defaults()`: Marks defaults; reduces `capital_reserves` if the collateral is insufficient. Possibly adjusts future lending criteria.  
+
+  4. `step()`:  
+
+     - Evaluate new credit requests (if model or scheduling logic triggers them here).  
+
+     - Update `loan_portfolio` (repayments, defaults).
+
+### 3.3 **Production Sector / Firm Agent** *(Recommended)*
+
+- **Class Name**: `Firm` or `ProductionSector`  
+
+- **Inheritance**: `mesa.Agent`  
+
+- **Attributes**:  
+
+  1. `capital_stock`: float  
+
+  2. `labor_demand`: int (determines how many households can be employed).  
+
+  3. `technology_level`: float (affects productivity).  
+
+  4. `production_function`: (e.g. Cobb-Douglas with parameters)  
+
+- **Methods**:  
+
+  1. `calculate_output() -> float`:  
+
+     ```python
+
+     def calculate_output(self, K, L):
+
+         # Example Cobb-Douglas
+
+         alpha = self.model.alpha_production  # capital share
+
+         return (K ** alpha) * (L ** (1 - alpha)) * self.technology_level
+
+     ```
+
+  2. `determine_labor_demand()`: Based on the current wage level, capital stock, and desired output.  
+
+  3. `pay_wages()`: Distribute wages to employed households. Possibly link to `unemployment_rate` in the model for macro updates.  
+
+  4. `step()`:  
+
+     - Update labor demand.  
+
+     - Produce output.  
+
+     - Possibly adjust wages or invest in more capital.
+
+### 3.4 **Household Agent**
+
+- **Class Name**: `Household`  
+
+- **Inheritance**: `mesa.Agent`  
+
+- **Attributes**:  
+
+  1. `wealth`: float (can become negative in debt scenarios).  
+
+  2. `income`: float  
+
+  3. `debt_obligations`: list or dict tracking active loans.  
+
+  4. `loss_aversion`, `discount_factors`: Behavior parameters.  
+
+  5. `social_links`: adjacency references or a friend list.  
+
+  6. `peer_influence_sensitivity`: float controlling how strongly an agent mimics neighbors.  
+
+  7. `negative_wealth_counter`: integer tracking consecutive steps of negative wealth (for potential bankruptcy).
+
+- **Methods**:  
+
+  1. `labor_decision()`: If the household is not employed, attempt to find a job in the `Firm` agent(s). If the wage is too low or wealth is high, might choose not to work.  
+
+  2. `compute_consumption()`:  
+
+     - Incorporate **positional utility** (compare to peers’ average consumption).  
+
+     - Account for **hyperbolic discounting** (present bias).  
+
+     - If “keeping up with the Joneses,” consumption might exceed purely rational levels.  
+
+  3. `request_credit()`: If short on funds for desired consumption or investment, requests a loan from a `Bank`.  
+
+  4. `invest_savings()`: Decides how to allocate leftover cash among assets (risk vs. safe). Incorporate **prospect theory** for risk/loss calculations.  
+
+  5. `check_bankruptcy()`: If wealth < 0 for too many periods, triggers bankruptcy or forced liquidation.  
+
+  6. `step()`:  
+
+     - Earn wages (if employed).  
+
+     - Pay taxes, repay loans.  
+
+     - Decide consumption vs. saving.  
+
+     - Possibly request new loans.  
+
+     - Follow or ignore herd signals from peers.  
+
+     - Update `wealth`. Check negative wealth for possible bankruptcy.
+
+---
+
+## **4. Social Network Logic & Example Snippet**
+
+1. **Network Construction**  
+
+   - Create a `networkx.Graph()` in `WealthResetModel.__init__`. Connect nodes (households) based on the `network_type`.  
+
+2. **Peer Influence Mechanism**  
+
+   - Each household has a threshold or logistic function to decide if it adopts a consumption or investment behavior.  
+
+**Example**: In `Household.step()`,
+
+```python
+
+def step(self):
+
+    # ... existing logic for wages, consumption, etc. ...
+
+    # 1. Gather neighbors' decisions
+
+    neighbors = list(self.model.network.neighbors(self))
+
+    investing_neighbors = sum(
+
+        1 for n in neighbors if self.model.schedule.agents[n].recent_investment_decision == 'risky_asset'
+
+    )
+
+    fraction_investing = investing_neighbors / len(neighbors) if neighbors else 0
+
+    # 2. Compare with threshold
+
+    if fraction_investing >= self.peer_influence_threshold:
+
+        # Herd effect triggers
+
+        self.recent_investment_decision = 'risky_asset'
+
+    else:
+
+        self.recent_investment_decision = self.default_investment_decision()
+
+    # ... finalize consumption, possibly request a loan, etc. ...
+
+```
+
+3. **Network Visualization**  
+
+   - Optionally, **Mesa** or **networkx** can plot the graph showing the fraction of households adopting certain behaviors each step.
+
+---
+
+## **5. Macroeconomic & Financial Logic**
+
+1. **Production & Labor Markets**  
+
+   - The **Firm** agent(s) set labor demand. Households supply labor if `wealth` is below a comfort threshold or they choose to remain active.  
+
+   - The equilibrium wage can be exogenously fixed or endogenously determined by supply/demand in the model.  
+
+   - Output is computed using a `production_function`. Excess output can be sold, with prices feeding into the inflation calculation.
+
+2. **Inflation Calculation**  
+
+   - Evaluate the ratio of **aggregate demand** to **aggregate supply** each period.  
+
+   - Update `current_inflation` using a simple Phillips-curve style approach or a direct supply-demand mismatch approach (e.g., if demand > supply, prices rise proportionally).
+
+3. **Bank Lending & Default**  
+
+   - Approved loan: principal is transferred to household’s wealth; `Bank` adds that loan to `loan_portfolio`.  
+
+   - Each step, household repays portion. If they fail to pay for multiple steps or net wealth < 0, the **default** event triggers.  
+
+   - Bank tries to recoup collateral; if insufficient, `bank.capital_reserves` is reduced.
+
+4. **Policy & Taxes**  
+
+   - Government tax function can be a progressive schedule. E.g., if `wealth` or `income` is above a bracket threshold, apply the relevant marginal tax.  
+
+   - Alternatively, `UBI` can add a flat income to each household, tested for redistributive impact.
+
+---
+
+## **6. Edge Case Handling**
+
+1. **Negative Wealth & Bankruptcy**  
+
+   - **Rule**: If a household has negative wealth for `X` consecutive steps (tracked by `negative_wealth_counter`), forcibly set wealth to 0, remove all assets, and mark them bankrupt.  
+
+   - Could also forbid them from new borrowing for `Y` steps to model credit blacklisting.  
+
+2. **Repeated Loan Defaults**  
+
+   - Households with prior defaults face higher interest rates or are automatically rejected by banks.  
+
+   - Bank’s risk-tolerance adaptively shifts to reduce future exposure if too many defaults occur in a short span.
+
+3. **Zero or Very Low Population**  
+
+   - If high death_rate or repeated bankruptcies decimates the population, ensure the code gracefully handles an empty labor pool or minimal households.  
+
+   - If `birth_rate` is used, new households start with default attributes (wealth = `$1,000,000` in a repeated reset scenario or some fraction).
+
+4. **Extreme Inflation / Deflation**  
+
+   - If inflation gets exceedingly high (hyperinflation scenario), agents might hoard assets or switch to alternative currency if that is in scope.  
+
+   - If deflation is persistent, model the negative feedback loop: reduced consumption, lower production, possible wage cuts.
+
+---
+
+## **7. Calibration & Validation**
+
+1. **Calibration**  
+
+   - **Method of Simulated Moments**: Adjust parameters like `loss_aversion`, `discount_factors`, and `credit_availability` to match real data on consumption-to-income ratio, default probabilities, Gini index, etc.  
+
+   - **Approximate Bayesian Computation**: Randomly sample parameters from prior distributions; accept/reject based on how close the simulation’s outputs are to empirical targets (wealth distribution, unemployment rates, etc.).
+
+2. **Validation**  
+
+   - **Stylized Facts**: Ensure the model can reproduce heavy-tailed wealth distributions, cyclical expansions and contractions, plausible inflation/unemployment correlations (Phillips curve), etc.  
+
+   - **Out-of-Sample Tests**: Calibrate on historical data up to year X, then see if the model’s emergent path from year X to Y matches known macro trends.  
+
+   - **Sensitivity Analysis**: Use **Sobol’ indices** or variance-based methods to rank parameters’ influence on key outcomes (inequality, default rates). Check if small changes in certain parameters drastically alter results.
+
+---
+
+## **8. Simulation Flow**
+
+A recommended yearly step:
+
+1. **Central Bank Step**  
+
+   - Evaluate inflation gap/unemployment gap → set new `current_interest_rate`.  
+
+2. **Production Sector (Optional)**  
+
+   - Determine labor demand → hire/fire households → compute output, wage distribution.  
+
+3. **Bank Agents Step**  
+
+   - Process loan repayments, mark defaults, adjust `capital_reserves`.  
+
+   - Evaluate new credit requests from households (if processed here rather than in real-time).  
+
+4. **Household Agents Step**  
+
+   - Receive wages (if employed).  
+
+   - Pay taxes, repay loans.  
+
+   - Make consumption decisions (peer influence, hyperbolic discounting, etc.).  
+
+   - Decide whether to borrow/invest.  
+
+   - Update wealth; check for bankruptcy triggers.  
+
+5. **Macro Updates**  
+
+   - Aggregate consumption, investment → influence inflation.  
+
+   - Calculate new unemployment rate from the difference between labor supply and production sector labor demand.  
+
+   - Compute GDP or other macro indicators.  
+
+6. **Data Collection**  
+
+   - Log distribution metrics (Gini, top 10% wealth share), inflation, interest rate, unemployment, defaults, etc.
+
+7. **Repeat**  
+
+   - Continue until `simulation_steps` is reached or a stopping condition (like system collapse) occurs.
+
+---
+
+## **9. Reporting & Visualization**
+
+1. **Numerical Outputs**  
+
+   - Time series of inflation, interest rates, Gini index, GDP, default rate, etc.  
+
+   - Distribution data (histograms of wealth, consumption, or debt).  
+
+2. **Network Visuals**  
+
+   - Color nodes by investment decision or consumption level to observe local clustering or adoption patterns.  
+
+3. **Dashboard Tools**  
+
+   - Sliders for `tax_policy`, `credit_availability`, or `max_loan_to_value` to see real-time changes in model outcomes (if using frameworks like Dash/Streamlit).
+
+---
+
+## **10. Extensibility & Future-Proofing**
+
+1. **Multi-Firm Economy**  
+
+   - Add multiple firms with different productivity levels or sectors, introducing trade and supply chain dynamics.  
+
+2. **Parallelization**  
+
+   - Use Mesa’s batch runner or custom HPC scripts to run large parameter sweeps for robust scenario analysis.  
+
+3. **Advanced Behavioral Layers**  
+
+   - Deeper modeling of financial literacy, or adaptive learning where agents update their bias parameters over time.  
+
+4. **Environmental Shocks**  
+
+   - Incorporate random or scheduled events (pandemics, climate disasters) that reduce labor supply, capital stock, or consumption exogenously.
+
+---
+
+# **Conclusion**
+
+This  **technical specification**:
+
+1. **Clearly defines** the classes and modules needed for an ABM that simulates wealth distribution starting from a uniform \$1 million.  
+
+2. **Incorporates** realistic macroeconomic dynamics, including a production function, bank credit cycles, and a central bank’s monetary policy.  
+
+3. **Accounts for** important **behavioral nuances** (prospect theory, hyperbolic discounting, social contagion) and network effects with explicit reference examples.  
+
+4. **Details** how to handle **edge cases** such as prolonged negative wealth, repeated defaults, and population growth/decline.  
+
+5. **Specifies** rigorous **calibration and validation** steps, ensuring empirical grounding and reliability of results.  
+
+This specification provides a blueprint for both practical implementation (in Python/Mesa) and methodologically robust economic analysis.
+
+</TECHNICAL SPEC>
+
+
+
+<PRD>
+
+Below is a **PRD** for the “Wealth Reset ABM Simulation.” It integrates all prior feedback points, ensuring comprehensive coverage of in-scope vs. out-of-scope features, explicit edge-case handling, HPC/parallelization considerations, and clearer milestone deliverables. The objective is to give any implementing team everything they need to begin development and see the project through to completion.
+
+---
+
+# **Product Requirements Document (PRD)**
+
+**Product Name**: *Wealth Reset ABM Simulation*  
+
+**Document Version**: 2.0  
+
+## **1. Purpose & Overview**
+
+1. **Product Summary**  
+
+   - The *Wealth Reset ABM Simulation* models a hypothetical society where every individual starts with \$1,000,000, then tracks how wealth distribution, economic structures, and social behaviors evolve over a century.  
+
+   - Core features include **agent-based modeling (ABM)** with households, banks, a central bank, and an optional production sector. We embed **macroeconomic feedback loops**, **credit market dynamics**, **behavioral biases**, and **social network effects** to generate emergent phenomena like inequality, speculative bubbles, and cyclical recessions.
+
+2. **Key Objectives**  
+
+   - **Investigate Inequality**: Determine how quickly wealth reconcentrates or disperses post-reset.  
+
+   - **Test Policy Interventions**: Assess how taxes, monetary policy, and regulation influence macro stability and wealth distribution.  
+
+   - **Model Realistic Behavior**: Incorporate **prospect theory**, **hyperbolic discounting**, and **social influence** so decisions reflect known human biases.  
+
+   - **Empirical Calibration**: Align the simulation with real-world data or stylized facts, enabling credible scenario testing.
+
+3. **Target Audience**  
+
+   - **Economists & Policymakers** interested in distributional and regulatory impacts.  
+
+   - **Academics & Researchers** seeking advanced ABM frameworks that incorporate micro-macro feedbacks.  
+
+   - **Technical Teams** (data scientists, engineers) needing a robust, configurable environment for exploration.
+
+---
+
+## **2. Background & Rationale**
+
+1. **Context**  
+
+   - Traditional economic models often lack micro-level heterogeneity or overlook key behavioral drivers.  
+
+   - Recent research highlights **credit booms**, **behavioral psychology**, and **network contagion** as major forces in real-world markets.  
+
+   - An ABM approach can capture bottom-up complexities—how local interactions produce macro-level patterns.  
+
+2. **Motivation**  
+
+   - Provide a **testbed** for analyzing universal wealth injections and policy responses.  
+
+   - Examine emergent phenomena (e.g., **financial crises**, **asset bubbles**, **herding**).  
+
+   - Ground the simulation in **empirical evidence**—offering more realistic insights than purely theoretical models.
+
+---
+
+## **3. Scope**
+
+### 3.1 **In-Scope Features**
+
+- **Household Agents**  
+
+  - Start with \$1,000,000 wealth each.  
+
+  - Make decisions around consumption, labor, investing, and borrowing.  
+
+  - Incorporate **behavioral biases** (loss aversion, hyperbolic discounting, social influence).  
+
+- **Bank Agents**  
+
+  - Lend to households under **loan-to-value** and **debt-to-income** constraints.  
+
+  - Manage capital reserves, evaluate default risk, face possible liquidity issues.  
+
+- **Central Bank Agent**  
+
+  - Adjust interest rates via a specified rule (e.g., Taylor rule) in response to inflation or unemployment.  
+
+- **Production Sector (Single-Firm or Aggregated)**  
+
+  - Determine labor demand, wage distribution, and total output via a **production function** (e.g., Cobb-Douglas).  
+
+- **Macroeconomic Calculations**  
+
+  - Inflation, unemployment, GDP, default rates, interest rates.  
+
+- **Policy Mechanisms**  
+
+  - **Taxation** (progressive, wealth tax, or flat), **UBI**, **macroprudential** tools (LTV, capital buffers).  
+
+- **Network Topologies**  
+
+  - Small-world, scale-free, or random graphs to simulate **social/peer influence** in consumption/investment.  
+
+- **Calibration & Validation**  
+
+  - Use known **stylized facts** (Pareto wealth distribution, cyclical volatility) or partial real-world data.  
+
+  - **Method of Simulated Moments (MSM)** or **Approximate Bayesian Computation (ABC)** for fitting model parameters.  
+
+- **Edge-Case Handling**  
+
+  - Bankruptcy triggers if negative wealth persists beyond a threshold.  
+
+  - Repeated loan defaults → higher borrowing costs or ban from credit markets.  
+
+  - Scenario where the economy collapses (e.g., mass unemployment, hyperinflation) is recognized and does not crash the simulation.
+
+### 3.2 **Out-of-Scope (for Initial Release)**
+
+- **Multi-Currency or International Trade**  
+
+  - No cross-border capital flows or exchange rate modeling in the first version.  
+
+- **Complex Demographics**  
+
+  - No explicit modeling of skill levels, regions, or personal identity factors.  
+
+- **Detailed Firm Heterogeneity**  
+
+  - Only one aggregated “production sector” or a small number of representative firms rather than multiple industries.  
+
+- **Highly Granular Time Steps**  
+
+  - Yearly or possibly quarterly steps, but not daily or continuous-time simulation.
+
+---
+
+## **4. Detailed Requirements**
+
+### 4.1 **Functional Requirements (FR)**
+
+1. **Wealth Initialization & Tracking**  
+
+   - **FR1.1**: Each *household agent* starts with \$1,000,000 at t=0.  
+
+   - **FR1.2**: Households’ net wealth can become negative (debt), tracked each step.
+
+2. **Household Dynamics**  
+
+   - **FR2.1**: Households decide labor participation, consumption, saving, investment, and borrowing yearly (or at each step).  
+
+   - **FR2.2**: Implement **behavioral biases**:  
+
+     - *Prospect Theory / Loss Aversion*: Gains/losses are reference-dependent, with \(\lambda > 1\) for losses.  
+
+     - *Hyperbolic Discounting*: Present bias factor \(\beta\) < 1 plus standard discount \(\delta\).  
+
+     - *Peer Influence/Herding*: If a fraction of neighbors invests or consumes in a specific way, the agent may mimic.  
+
+   - **FR2.3**: **Edge-Case**: *Bankruptcy mechanism*. If a household’s wealth stays below 0 for `X` consecutive steps (configurable), it is declared bankrupt, wealth resets to 0, and future borrowing is disallowed for `Y` periods.  
+
+3. **Banking & Credit Markets**  
+
+   - **FR3.1**: Banks offer loans with an interest rate = `central_bank_rate + risk_spread`, subject to LTV, DTI, or other constraints.  
+
+   - **FR3.2**: **Edge-Case**: If a household defaults, bank tries to recoup collateral; if insufficient, reduce bank capital. Repeated defaults by the same household raise future interest rates or deny credit.  
+
+   - **FR3.3**: Bank capital must stay above a minimum ratio; if it drops too low, the bank tightens lending or reverts to higher spreads.
+
+4. **Central Bank**  
+
+   - **FR4.1**: Updates **interest rate** using a policy rule (Taylor rule: interest_rate = neutral + \(\alpha\cdot(\text{inflation} - \text{target}) + \beta\cdot(\text{unemployment} - u^*)\)).  
+
+   - **FR4.2**: Publishes the new rate each step so banks and households use it for credit decisions.
+
+5. **Production Sector**  
+
+   - **FR5.1**: Implements a **Cobb-Douglas** or similar production function to determine output from capital (K) and labor (L).  
+
+   - **FR5.2**: Sets wage levels or wage distribution, influencing household income and the unemployment rate.  
+
+   - **FR5.3**: Adjusts labor demand based on firm objectives—higher output demand → more labor, etc.
+
+6. **Macroeconomic Updates**  
+
+   - **FR6.1**: **Inflation**: Calculate from supply-demand mismatch or a variant of the Phillips curve.  
+
+   - **FR6.2**: **Unemployment**: Tied to how many households the production sector employs vs. those wanting work.  
+
+   - **FR6.3**: Compute **GDP** = consumption + investment + (optional government spending).  
+
+   - **FR6.4**: Collect time-series data: interest rates, inflation, Gini coefficient, top-1% wealth share, default rates.
+
+7. **Policy & Regulation**  
+
+   - **FR7.1**: **Taxation**: Progressive or flat. Possibly a wealth tax or universal basic income (UBI).  
+
+   - **FR7.2**: **Macroprudential Tools**: LTV caps, capital buffers, or stress testing triggers that alter lending.  
+
+   - **FR7.3**: Agents respond in the same step if policy changes mid-simulation.
+
+8. **Calibration & Validation**  
+
+   - **FR8.1**: Provide scripts or methods for **Method of Simulated Moments (MSM)** or **Approximate Bayesian Computation (ABC)**.  
+
+   - **FR8.2**: Must replicate known **stylized facts** (Pareto distribution for top wealth, cyclical expansions/recessions).  
+
+   - **FR8.3**: Conduct **sensitivity analysis** using variance-based or Sobol’ indices to identify key parameters.
+
+9. **Data Logging & Visualization**  
+
+   - **FR9.1**: Log results each step for wealth distribution, inflation, interest rate, GDP, default rates.  
+
+   - **FR9.2**: Optional **interactive dashboard** using a tool like Streamlit, Dash, or Mesa’s built-in visualizer.  
+
+   - **FR9.3**: Provide a **network view** to display how agent decisions (e.g., “invested in risky asset”) spread among neighbors.
+
+---
+
+### 4.2 **Non-Functional Requirements (NFR)**
+
+1. **Performance & Scalability**  
+
+   - **NFR1.1**: A single run with 1,000 household agents for 100 steps should complete in under ~5 minutes on a modern CPU.  
+
+   - **NFR1.2**: Must support **parallel or batch-running** for scenario exploration.  
+
+   - **NFR1.3**: Include HPC readiness if scaling to 10,000+ agents or multiple runs:  
+
+     - Document how to distribute the run across cores/nodes.  
+
+     - Provide potential GPU acceleration or Dask-based parallelism guidelines if feasible.
+
+2. **Modularity & Extensibility**  
+
+   - **NFR2.1**: Agent classes (Household, Bank, Central Bank, Firm) must be easily extended with minimal refactoring.  
+
+   - **NFR2.2**: Production functions (Cobb-Douglas, Leontief, etc.) or interest rate rules (Taylor, fixed) should be swappable modules.
+
+3. **Reliability & Edge Case Handling**  
+
+   - **NFR3.1**: Simulation must not crash under **extreme parameter values** (e.g., hyperinflation, mass default, or near-zero interest rates).  
+
+   - **NFR3.2**: Bankruptcy logic must gracefully handle large numbers of failing households; banks can run out of capital, restricting new lending.  
+
+4. **Maintainability & Documentation**  
+
+   - **NFR4.1**: Follow Python’s **PEP 8** style guidelines and maintain docstrings.  
+
+   - **NFR4.2**: Provide **inline references** to academic or data sources for model assumptions (e.g., “Risk aversion calibration from Kahneman & Tversky (1979).”).  
+
+   - **NFR4.3**: Maintain a **changelog** of new features or policy modules introduced in each release.
+
+5. **Accuracy & Traceability**  
+
+   - **NFR5.1**: Store all simulation inputs (random seeds, parameter values) to ensure **exact reproducibility**.  
+
+   - **NFR5.2**: Provide an internal **logging** mechanism to debug or track agent-level decisions (e.g., credit approvals, defaults, consumption spikes).
+
+---
+
+## **5. Milestones & Deliverables**
+
+Below is an **updated timeline** with clearer deliverables at each phase:
+
+1. **Phase 1: Core Prototype (4–6 weeks)**  
+
+   - **Deliverables**:  
+
+     - **Agent Classes**: Household (wealth, consumption, basic credit usage), Bank (basic lending, no advanced risk).  
+
+     - **Central Bank**: Simple fixed interest rate or minimal Taylor rule.  
+
+     - **Basic Production**: Single wage level, no advanced function.  
+
+     - **Network**: Possibly random or small-world.  
+
+     - **Edge-Case Handling**: Basic negative wealth check (bankruptcy stub).
+
+   - **Success Metric**: A minimal ABM run completes with no crashes, capturing fundamental interactions (consumption, lending, wealth change).
+
+2. **Phase 2: Behavioral & Financial Enhancements (4–6 weeks)**  
+
+   - **Deliverables**:  
+
+     - **Behavioral Biases**: Loss aversion, hyperbolic discounting, herd threshold.  
+
+     - **Advanced Credit Logic**: LTV, DTI checks, default triggers, capital reserves for banks.  
+
+     - **Expanded Production**: Integrate a Cobb-Douglas function for wage setting.  
+
+     - **Enhanced Bankruptcy**: Full mechanic for multi-step negative wealth, repeated defaults.  
+
+     - **UBI / Taxation** toggles.  
+
+   - **Success Metric**: Model can produce more realistic economic cycles, with a range of default scenarios and policy toggles.
+
+3. **Phase 3: Calibration & Validation (3–5 weeks)**  
+
+   - **Deliverables**:  
+
+     - **Calibration Scripts**: Implement Method of Simulated Moments or ABC.  
+
+     - **Comparison to Stylized Facts**: Gini coefficient for wealth, top 1% share, cyclical patterns.  
+
+     - **Sensitivity Analysis**: Automatic generation of parameter influence via Sobol’ indices.  
+
+   - **Success Metric**: Simulation outcomes match known distribution patterns (e.g., close to real-world Gini or cyclical volatility levels). Final parameter sets documented.
+
+4. **Phase 4: Finalization, Performance, & Reporting (2–4 weeks)**  
+
+   - **Deliverables**:  
+
+     - **Performance Optimization**: HPC readiness or multi-core support for large agent populations.  
+
+     - **Dashboard/Visualization**: Interactive or offline plotting with timeseries, histograms, and network graphs.  
+
+     - **Documentation**: Full user manual, code docstrings, example scripts.  
+
+     - **Policy Scenario Demos**: E.g., high vs. low interest rate regime, progressive vs. flat tax.  
+
+   - **Success Metric**: A stable, well-documented ABM platform, able to run large-scale or multi-run analyses in HPC settings, with clear scenario outputs.
+
+---
+
+## **6. Success Metrics & Acceptance Criteria**
+
+1. **Quantitative**  
+
+   - **Runtime**: A run with 1,000 households for 100 steps in under 5 minutes.  
+
+   - **Calibration Accuracy**: Discrepancy between real-world (or target stylized) Gini and model output < 10% after calibration.  
+
+   - **Stability**: Model can handle extremes (e.g., a scenario with 50% default rate or 20% inflation) without crashing.
+
+2. **Qualitative**  
+
+   - **Documentation Quality**: Must include an installation guide, parameter config references, calibration instructions, and code inline docs.  
+
+   - **User Experience**: The final model offers intuitive examples or scripts to run typical scenarios.  
+
+   - **Policy Insights**: Clear differences in outcomes under different tax/regulatory settings must be observable and explainable.
+
+---
+
+## **7. Risks & Mitigation**
+
+1. **Over-Complexity**  
+
+   - *Risk*: Too many parameters or features may overwhelm dev timelines or hamper interpretability.  
+
+   - *Mitigation*: Maintain strict modular design; implement features in phases; confirm each milestone’s stability before adding new complexities.
+
+2. **Data Availability for Calibration**  
+
+   - *Risk*: Difficulty finding granular data on wealth distribution, default rates, or consumption patterns.  
+
+   - *Mitigation*: Use stylized facts from known research (Pareto wealth tails, typical saving rates, etc.) and refine if better data becomes available.
+
+3. **Performance Bottlenecks**  
+
+   - *Risk*: Large population or repeated runs for calibration could be slow.  
+
+   - *Mitigation*: Early HPC readiness. Provide parallelization (e.g., batch-run scripts, Dask). Optimize data structures (e.g., avoiding heavy loops in Python if possible).
+
+4. **Emergent “Black Box”**  
+
+   - *Risk*: ABMs can become opaque, with many interactions.  
+
+   - *Mitigation*: **Logging** agent-level decisions, building debugging tools, and providing thorough scenario analyses to interpret results.
+
+5. **Documentation Gaps**  
+
+   - *Risk*: Rapid feature additions outpacing documentation leads to confusion.  
+
+   - *Mitigation*: Strict docstrings, maintain a Wiki or readme updates each sprint, highlight changes in a **changelog**.
+
+---
+
+## **8. Stakeholders & Roles**
+
+- **Project Sponsor**: Sets overall vision, ensures alignment with policy/research goals.  
+
+- **Technical Lead**: Oversees architecture decisions, HPC/performance strategy, code reviews.  
+
+- **Economics/Modeling Expert**: Curates calibration data, stylized facts, and ensures theoretical soundness.  
+
+- **Development Team**: Implements agent logic, network structures, data pipelines, and HPC integration.  
+
+- **QA & Data Analyst**: Runs tests, oversees calibration, sensitivity analysis, scenario validations.  
+
+- **User Advisory Group** (External): Domain experts or final stakeholders who provide feedback in each milestone, ensuring the model meets real-world or academic standards.
+
+---
+
+## **9. HPC & Parallelization Strategy**
+
+1. **Batch Runs**  
+
+   - Provide a script (e.g., `batch_runner.py`) that iterates over parameter grids or random draws.  
+
+2. **Distributed Computation**  
+
+   - Outline a method for using `multiprocessing` or `Dask` to run multiple simulations concurrently.  
+
+3. **HPC Clusters**  
+
+   - Document environment assumptions (e.g., SLURM or another HPC job scheduler) so advanced users can distribute runs across multiple nodes.  
+
+   - Offer guidelines for memory usage, potential GPU integration for large matrix operations or network updates.
+
+---
+
+## **10. Open Questions**
+
+1. **Time Granularity**: Should the final release remain annual steps or transition to quarterly for more nuanced business cycle capturing?  
+
+2. **Degree of UBI**: Will we need advanced UBI logic (e.g., variable amounts by income bracket) or a simple flat distribution?  
+
+3. **Multiple Firms**: Could the single production sector eventually split into multiple specialized sectors (tech vs. manufacturing)?  
+
+4. **Firm Behavior**: Should future versions allow for *endogenous investment decisions by the firm* (e.g., expanding capital stock based on profitability)?
+
+---
+
+## **11. In-Scope vs. Future Extensions Diagram**
+
+```
+
+        ┌─────────────────────────────────┐
+
+        │       In-Scope (v1.0)         │
+
+        ├─────────────────────────────────┤
+
+        │• Households, Banks, Central CB │
+
+        │• Single Production Sector      │
+
+        │• Macroeconomic loops (Infl/Unemp)
+
+        │• Basic behavioral biases       │
+
+        │• Tax/UBI toggles              │
+
+        │• Calibration scripts (MSM/ABC) │
+
+        └─────────────────────────────────┘
+
+                    |
+
+                    v
+
+        ┌─────────────────────────────────┐
+
+        │   Future Extensions (v2.x+)    │
+
+        ├─────────────────────────────────┤
+
+        │• Multi-currency, international │
+
+        │• Heterogeneous firms/industries│
+
+        │• Geographic/demographic detail │
+
+        │• Very granular time steps      │
+
+        │• More advanced HPC approach    │
+
+        └─────────────────────────────────┘
+
+```
+
+---
+
+## **12. References & Supporting Documents**
+
+- **Revised Technical Spec**: Detailed class structures (Household, Bank, Central Bank, Firm), methods, data flow.  
+
+- **Academic Resources**:  
+
+  - Kahneman & Tversky (1979) for loss aversion.  
+
+  - Dell’Ariccia et al. (2012) for credit booms & macroprudential insights.  
+
+  - Ashraf et al. (2012) for inflation and ABM interactions.  
+
+- **Model Implementation Notes**: Best practices for Mesa (Python ABM framework), HPC config guidelines.  
+
+- **Changelog**: (In the repository) Tracks incremental feature merges, policy additions, or production function updates.
+
+---
+
+# **Conclusion**
+
+This **10/10 PRD** gives a **comprehensive** blueprint for building, calibrating, and analyzing the *Wealth Reset ABM Simulation*. It addresses:
+
+- **Functional** and **Non-Functional** Requirements, including explicit **edge-case** handling.  
+
+- A **clear milestone plan** with deliverables at each phase, and explicit success metrics.  
+
+- **HPC & Parallelization** considerations for large-scale runs or future expansions.  
+
+- **In-Scope vs. Future** expansions with a quick reference diagram, ensuring no confusion about immediate vs. long-term goals.
+
+By following this document, an implementation team—regardless of prior involvement—should have the guidance needed to develop, validate, and deploy a sophisticated ABM that realistically explores how wealth distribution evolves from an initial universal \$1 million baseline.
+
+</PRD>
+
+
+
+
+
+Ensure that Mesa is compliant with the migration guide below too:
+
+
+
+<MIGRATION GUIDE>
+
+Mesa Migration guide
+
+This guide contains breaking changes between major Mesa versions and how to resolve them.
+
+Non-breaking changes aren’t included, for those see our Release history.
+
+
+
+Mesa 3.0
+
+Mesa 3.0 introduces significant changes to core functionalities, including agent and model initialization, scheduling, and visualization. The guide below outlines these changes and provides instructions for migrating your existing Mesa projects to version 3.0.
+
+This guide is a work in progress. The development of it is tracked in Issue #2233.
+
+
+
+Upgrade strategy
+
+We recommend the following upgrade strategy:
+
+Update to the latest Mesa 2.x release (mesa<3).
+
+Update to the latest Mesa 3.0.x release (mesa<3.1).
+
+Update to the latest Mesa 3.x release (mesa<4).
+
+With each update, resolve all errors and warnings, before updating to the next one.
+
+Reserved and private variables
+
+Reserved variables
+
+Currently, we have reserved the following variables:
+
+Model: agents, current_id, random, running, steps, time.
+
+Agent: unique_id, model.
+
+You can use (read) any reserved variable, but Mesa may update them automatically and rely on them, so modify/update at your own risk.
+
+Private variables
+
+Any variables starting with an underscore (_) are considered private and for Mesa’s internal use. We might use any of those. Modifying or overwriting any private variable is at your own risk.
+
+Ref: Discussion #2230, PR #2225
+
+Removal of mesa.flat namespace
+
+The mesa.flat namespace is removed. Use the full namespace for your imports.
+
+Ref: PR #2091
+
+Mandatory Model initialization with super().__init__()
+
+In Mesa 3.0, it is now mandatory to call super().__init__() when initializing your model class. This ensures that all necessary Mesa model variables are correctly set up and agents are properly added to the model. If you want to control the seed of the random number generator, you have to pass this as a keyword argument to super as shown below.
+
+Make sure all your model classes explicitly call super().__init__() in their __init__ method:
+
+class MyModel(mesa.Model):
+
+    def __init__(self, some_arg_I_need, seed=None, some_kwarg_I_need=True):
+
+        super().__init__(seed=seed)  # Calling super is now required, passing seed is highly recommended
+
+        # Your model initialization code here
+
+        # this code uses some_arg_I_need and my_init_kwarg
+
+
+
+This change ensures that all Mesa models are properly initialized, which is crucial for:
+
+Correctly adding agents to the model
+
+Setting up other essential Mesa model variables
+
+Maintaining consistency across all models
+
+If you forget to call super().__init__(), you’ll now see this error:
+
+RuntimeError: The Mesa Model class was not initialized. You must explicitly initialize the Model by calling super().__init__() on initialization.
+
+
+
+Ref: PR #2218, PR #1928, Mesa-examples PR #83
+
+Automatic assignment of unique_id to Agents
+
+In Mesa 3.0, unique_id for agents is now automatically assigned, simplifying agent creation and ensuring unique IDs across all agents in a model.
+
+Remove unique_id from agent initialization:
+
+# Oldagent = MyAgent(unique_id=unique_id, model=self, ...)agent = MyAgent(unique_id, self, ...)agent = MyAgent(self.next_id(), self, ...)# Newagent = MyAgent(model=self, ...)agent = MyAgent(self, ...)
+
+
+
+Remove unique_id from Agent super() call:
+
+# Oldclass MyAgent(Agent):
+
+    def __init__(self, unique_id, model, ...):
+
+        super().__init__(unique_id, model)# Newclass MyAgent(Agent):
+
+    def __init__(self, model, ...):
+
+        super().__init__(model)
+
+
+
+Important notes:
+
+unique_id is now automatically assigned relative to a Model instance and starts from 1
+
+Model.next_id() is removed
+
+If you previously used custom unique_id values, store that information in a separate attribute
+
+Ref: PR #2226, PR #2260, Mesa-examples PR #194, Issue #2213
+
+AgentSet and Model.agents
+
+In Mesa 3.0, the Model class internally manages agents using several data structures:
+
+self._agents: A dictionary containing hard references to all agents, indexed by their unique_id.
+
+self._agents_by_type: A dictionary of AgentSets, organizing agents by their type.
+
+self._all_agents: An AgentSet containing all agents in the model.
+
+These internal structures are used to efficiently manage and access agents. Users should interact with agents through the public model.agents property, which returns the self._all_agents AgentSet.
+
+
+
+Model.agents
+
+Attempting to set model.agents now raises an AttributeError instead of a warning. This attribute is reserved for internal use by Mesa.
+
+If you were previously setting model.agents in your code, you must update it to use a different attribute name for custom agent storage.
+
+For example, replace:
+
+model.agents = my_custom_agents
+
+
+
+With:
+
+model.custom_agents = my_custom_agents
+
+
+
+Time and schedulers
+
+Automatic increase of the steps counter
+
+The steps counter is now automatically increased. With each call to Model.steps() it’s increased by 1, at the beginning of the step.
+
+You can access it by Model.steps, and it’s internally in the datacollector, batchrunner and the visualisation.
+
+Ref: PR #2223, Mesa-examples PR #161
+
+Removal of Model._time and rename ._steps
+
+Model._time is removed. You can define your own time variable if needed.
+
+Model._steps steps is renamed to Model.steps.
+
+Removal of Model._advance_time()
+
+The Model._advance_time() method is removed. This now happens automatically.
+
+
+
+Replacing Schedulers with AgentSet functionality
+
+The whole Time module in Mesa is deprecated and will be removed in Mesa 3.1. All schedulers should be replaced with AgentSet functionality and the internal Model.steps counter. This allows much more flexibility in how to activate Agents and makes it explicit what’s done exactly.
+
+Here’s how to replace each scheduler:
+
+
+
+BaseScheduler
+
+Replace:
+
+self.schedule = BaseScheduler(self)self.schedule.step()
+
+
+
+With:
+
+self.agents.do("step")
+
+
+
+RandomActivation
+
+Replace:
+
+self.schedule = RandomActivation(self)self.schedule.step()
+
+
+
+With:
+
+self.agents.shuffle_do("step")
+
+
+
+SimultaneousActivation
+
+Replace:
+
+self.schedule = SimultaneousActivation(self)self.schedule.step()
+
+
+
+With:
+
+self.agents.do("step")self.agents.do("advance")
+
+
+
+StagedActivation
+
+Replace:
+
+self.schedule = StagedActivation(self, ["stage1", "stage2", "stage3"])self.schedule.step()
+
+
+
+With:
+
+for stage in ["stage1", "stage2", "stage3"]:
+
+    self.agents.do(stage)
+
+
+
+If you were using the shuffle and/or shuffle_between_stages options:
+
+stages = ["stage1", "stage2", "stage3"]if shuffle:
+
+    self.random.shuffle(stages)for stage in stages:
+
+    if shuffle_between_stages:
+
+        self.agents.shuffle_do(stage)
+
+    else:
+
+        self.agents.do(stage)
+
+
+
+RandomActivationByType
+
+Replace:
+
+self.schedule = RandomActivationByType(self)self.schedule.step()
+
+
+
+With:
+
+for agent_class in self.agent_types:
+
+    self.agents_by_type[agent_class].shuffle_do("step")
+
+
+
+Replacing step_type
+
+The RandomActivationByType scheduler had a step_type method that allowed stepping only agents of a specific type. To replicate this functionality using AgentSet:
+
+Replace:
+
+self.schedule.step_type(AgentType)
+
+
+
+With:
+
+self.agents_by_type[AgentType].shuffle_do("step")
+
+
+
+General Notes
+
+The Model.steps counter is now automatically incremented. You don’t need to manage it manually.
+
+If you were using self.schedule.agents, replace it with self.agents.
+
+If you were using self.schedule.get_agent_count(), replace it with len(self.agents).
+
+If you were using self.schedule.agents_by_type, replace it with self.agents_by_type.
+
+Agents are now automatically added to or removed from the model’s AgentSet (model.agents) when they are created or deleted, eliminating the need to manually call self.schedule.add() or self.schedule.remove().
+
+However, you still need to explicitly remove the Agent itself by using Agent.remove(). Typically, this means:
+
+Replace self.schedule.remove(agent) with agent.remove() in the Model.
+
+Replace self.model.schedule.remove(self) with self.remove() within the Agent.
+
+From now on you’re now not bound by 5 distinct schedulers, but can mix and match any combination of AgentSet methods (do, shuffle, select, etc.) to get the desired Agent activation.
+
+Ref: Original discussion #1912, decision discussion #2231, example updates #183 and #201, PR #2306
+
+Visualisation
+
+Mesa has adopted a new API for our frontend. If you already migrated to the experimental new SolaraViz you can still use the import from mesa.experimental. Otherwise here is a list of things you need to change.
+
+Note: SolaraViz is experimental and still in active development for Mesa 3.0. While we attempt to minimize them, there might be API breaking changes between Mesa 3.0 and 3.1. There won’t be breaking changes between Mesa 3.0.x patch releases.
+
+Model Initialization
+
+Previously SolaraViz was initialized by providing a model_cls and a model_params. This has changed to expect a model instance model. You can still provide (user-settable) model_params, but only if users should be able to change them. It is now also possible to pass in a “reactive model” by first calling model = solara.reactive(model). This is useful for notebook environments. It allows you to pass the model to the SolaraViz Module, but continue to use the model. For example calling model.value.step() (notice the extra .value) will automatically update the plots. This currently only automatically works for the step method, you can force visualization updates by calling model.value.force_update().
+
+Model Initialization with Keyword Arguments
+
+With the introduction of SolaraViz in Mesa 3.0, models are now instantiated using **model_parameters.value. This means all inputs for initializing a new model must be keyword arguments. Ensure your model’s __init__ method accepts keyword arguments matching the keys in model_params.
+
+class MyModel(mesa.Model):
+
+    def __init__(self, n_agents=10, seed=None):
+
+        super().__init__(seed=seed)
+
+        # Initialize the model with N agents
+
+
+
+Default space visualization
+
+Previously we included a default space drawer that you could configure with an agent_portrayal function. You now have to explicitly create a space drawer with the agent_portrayal function
+
+# oldfrom mesa.experimental import SolaraVizSolaraViz(model_cls, model_params, agent_portrayal=agent_portrayal)# newfrom mesa.visualization import SolaraViz, make_space_componentSolaraViz(model, components=[make_space_component(agent_portrayal)])
+
+
+
+Plotting “measures”
+
+“Measure” plots also need to be made explicit here. Previously, measure could either be 1) A function that receives a model and returns a solara component or 2) A string or list of string of variables that are collected by the datacollector and are to be plotted as a line plot. 1) still works, but you can pass that function to “components” directly. 2) needs to explicitly call the make_plot_measure()function.
+
+# oldfrom mesa.experimental import SolaraVizdef make_plot(model):
+
+    ...SolaraViz(model_cls, model_params, measures=[make_plot, "foo", ["bar", "baz"]])# newfrom mesa.visualization import SolaraViz, make_plot_componentSolaraViz(model, components=[make_plot, make_plot_component("foo"), make_plot_component("bar", "baz")])
+
+
+
+Plotting text
+
+To plot model-dependent text the experimental SolaraViz provided a make_text function that wraps another functions that receives the model and turns its string return value into a solara text component. Again, this other function can now be passed directly to the new SolaraViz components array. It is okay if your function just returns a string.
+
+# oldfrom mesa.experimental import SolaraViz, make_textdef show_steps(model):
+
+    return f"Steps: {model.steps}"SolaraViz(model_cls, model_params, measures=make_text(show_steps))# newfrom mesa.visualisation import SolaraVizdef show_steps(model):
+
+    return f"Steps: {model.steps}"SolaraViz(model, components=[show_steps])
+
+
+
+Other changes
+
+Removal of Model.initialize_data_collector
+
+The initialize_data_collector in the Model class is removed. In the Model class, replace:
+
+Replace:
+
+self.initialize_data_collector(...)
+
+
+
+With:
+
+self.datacollector = DataCollector(...)
+
+
+
+Ref: PR #2327, Mesa-examples PR #208)
+
+</MIGRATION GUIDE>
