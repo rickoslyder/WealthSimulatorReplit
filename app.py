@@ -100,7 +100,8 @@ with tab1:
             ubi_amount=ubi_amount,
             social_influence_strength=social_influence_strength,
             max_loan_to_income_ratio=max_loan_to_income_ratio,
-            credit_availability=credit_availability
+            credit_availability=credit_availability,
+            seed=None
         )
         
         # Set up data collection

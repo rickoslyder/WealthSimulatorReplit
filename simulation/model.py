@@ -1,7 +1,6 @@
 import numpy as np
 import networkx as nx
 from mesa import Model
-from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 
 from simulation.agents import EconomicAgent
@@ -27,7 +26,8 @@ class WealthDistributionModel(Model):
                  ubi_amount=0,
                  social_influence_strength=0.3,
                  max_loan_to_income_ratio=5.0,
-                 credit_availability=0.7):
+                 credit_availability=0.7,
+                 seed=None):
         """
         Initialize a new WealthDistributionModel.
         
@@ -47,8 +47,9 @@ class WealthDistributionModel(Model):
             social_influence_strength: Strength of peer effects
             max_loan_to_income_ratio: Maximum loan-to-income ratio
             credit_availability: Ease of obtaining credit (0-1)
+            seed: Random seed for reproducibility
         """
-        super().__init__()
+        super().__init__(seed=seed)
         
         self.num_agents = num_agents
         self.initial_wealth = initial_wealth
@@ -72,11 +73,10 @@ class WealthDistributionModel(Model):
         self.unemployment_rate = 0.05  # Initial unemployment
         self.income_mean = np.log(initial_wealth * 0.08)  # Log mean of income distribution
         
-        # Initialize scheduler and data collection
-        self.schedule = RandomActivation(self)
+        # Initialize data collection
         self.datacollector = DataCollector(
             model_reporters={
-                "Gini": lambda m: calculate_gini([a.wealth for a in m.schedule.agents]),
+                "Gini": lambda m: calculate_gini([a.wealth for a in m.agents]),
                 "GDP": lambda m: m.gdp,
                 "Inflation": lambda m: m.inflation_rate,
                 "Interest_Rate": lambda m: m.interest_rate,
@@ -90,11 +90,10 @@ class WealthDistributionModel(Model):
         )
         
         # Create agents
-        self.agents = []
-        for i in range(self.num_agents):
-            agent = EconomicAgent(i, self, initial_wealth)
-            self.schedule.add(agent)
-            self.agents.append(agent)
+        self._agent_list = []
+        for _ in range(self.num_agents):
+            agent = EconomicAgent(self, initial_wealth)
+            self._agent_list.append(agent)
         
         # Create social network
         self._create_social_network()
@@ -111,11 +110,14 @@ class WealthDistributionModel(Model):
         # Small-world networks have local clustering and short average path lengths
         G = nx.watts_strogatz_graph(self.num_agents, k=10, p=0.2)
         
+        # Convert agents to a list for indexed access
+        agent_list = list(self.agents)
+        
         # Assign neighbors to each agent
-        for i, agent in enumerate(self.agents):
+        for i, agent in enumerate(agent_list):
             # Get the neighbors from the network
             neighbor_indices = list(G.neighbors(i))
-            agent.neighbors = [self.agents[idx] for idx in neighbor_indices]
+            agent.neighbors = [agent_list[idx] for idx in neighbor_indices]
     
     def step(self):
         """Execute one time step (year) in the simulation."""
@@ -123,7 +125,7 @@ class WealthDistributionModel(Model):
         self._update_macroeconomic_conditions()
         
         # Let agents make their decisions
-        self.schedule.step()
+        self.agents.shuffle_do("step")
         
         # Collect data
         self.datacollector.collect(self)

@@ -6,16 +6,15 @@ class EconomicAgent(Agent):
     Agent representing an individual in the economy with wealth, income, and behavioral traits.
     """
     
-    def __init__(self, unique_id, model, initial_wealth=1000000):
+    def __init__(self, model, initial_wealth=1000000):
         """
         Initialize a new economic agent.
         
         Args:
-            unique_id: Unique identifier for the agent
             model: The model instance the agent belongs to
             initial_wealth: Starting wealth for the agent (default $1,000,000)
         """
-        super().__init__(unique_id, model)
+        super().__init__(model)
         
         # Economic attributes
         self.wealth = initial_wealth
