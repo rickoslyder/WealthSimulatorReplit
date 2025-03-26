@@ -11,6 +11,7 @@ import time
 from simulation.model import WealthDistributionModel
 from simulation.utils import calculate_gini, calculate_wealth_percentiles, calculate_wealth_shares
 from simulation.visualization import plot_wealth_distribution, plot_gini_coefficient, plot_wealth_shares
+from simulation.llm_analysis import get_simulation_presets, get_llm_analysis, initialize_gemini
 
 # Set page configuration
 st.set_page_config(
@@ -27,40 +28,126 @@ starts with $1,000,000. The simulation uses agent-based modeling to capture econ
 behavioral, and policy dynamics.
 """)
 
-# Sidebar parameters
-st.sidebar.header("Simulation Parameters")
+# Initialize session state for storing selected preset
+if 'selected_preset' not in st.session_state:
+    st.session_state['selected_preset'] = 'default'
+    
+if 'custom_parameters' not in st.session_state:
+    st.session_state['custom_parameters'] = False
 
-# Demographics
-st.sidebar.subheader("Population")
-num_agents = st.sidebar.slider("Number of Agents", 100, 1000, 200, 100)
+# Get simulation presets
+presets = get_simulation_presets()
 
-# Economic Parameters
-st.sidebar.subheader("Economic Parameters")
-initial_interest_rate = st.sidebar.slider("Initial Interest Rate (%)", 1.0, 10.0, 3.0, 0.5)
-base_return_rate = st.sidebar.slider("Base Investment Return (%)", 3.0, 15.0, 7.0, 0.5)
-income_volatility = st.sidebar.slider("Income Volatility", 0.1, 0.5, 0.2, 0.05)
-initial_inflation_rate = st.sidebar.slider("Initial Inflation Rate (%)", 0.0, 10.0, 2.0, 0.5)
+# Sidebar for API key and presets
+st.sidebar.header("Configuration")
 
-# Behavioral Parameters
-st.sidebar.subheader("Behavioral Parameters")
-risk_aversion_mean = st.sidebar.slider("Average Risk Aversion", 0.0, 1.0, 0.5, 0.1)
-time_preference_mean = st.sidebar.slider("Average Time Preference (Patience)", 0.0, 1.0, 0.7, 0.1)
-consumption_preference_mean = st.sidebar.slider("Average Consumption Preference", 0.3, 0.8, 0.6, 0.05)
+# API key input for Gemini
+gemini_api_key = st.sidebar.text_input(
+    "Gemini API Key (for AI analysis)",
+    type="password",
+    help="Required for AI-powered analysis of simulation results"
+)
 
-# Policy Parameters
-st.sidebar.subheader("Policy Parameters")
-tax_rate = st.sidebar.slider("Income Tax Rate (%)", 0.0, 50.0, 25.0, 5.0) / 100
-wealth_tax_rate = st.sidebar.slider("Wealth Tax Rate (%)", 0.0, 5.0, 0.0, 0.5) / 100
-ubi_amount = st.sidebar.slider("Universal Basic Income (Annual $)", 0, 50000, 0, 1000)
+# Store API key in session state
+if gemini_api_key:
+    st.session_state['GEMINI_API_KEY'] = gemini_api_key
 
-# Social Network
-st.sidebar.subheader("Social Network")
-social_influence_strength = st.sidebar.slider("Social Influence Strength", 0.0, 1.0, 0.3, 0.1)
+# Preset selector section
+st.sidebar.subheader("Simulation Presets")
 
-# Credit Market
-st.sidebar.subheader("Credit Market")
-max_loan_to_income_ratio = st.sidebar.slider("Max Loan-to-Income Ratio", 1.0, 10.0, 5.0, 0.5)
-credit_availability = st.sidebar.slider("Credit Availability", 0.0, 1.0, 0.7, 0.1)
+# Create two columns for better layout of preset buttons
+preset_cols = st.sidebar.columns(2)
+
+# Counter for alternating between columns
+i = 0
+
+# Current preset information display
+current_preset_name = presets[st.session_state['selected_preset']]['name'] if not st.session_state.get('custom_parameters', False) else "Custom Parameters"
+
+# Display all preset buttons
+for preset_id, preset_data in presets.items():
+    # Determine which column to place this preset button
+    col_idx = i % 2
+    
+    # Create the button in the appropriate column
+    if preset_cols[col_idx].button(
+        preset_data['name'],
+        key=f"preset_{preset_id}",
+        help=preset_data['tooltip'],
+        use_container_width=True,
+        type="secondary" if st.session_state['selected_preset'] != preset_id or st.session_state.get('custom_parameters', False) else "primary"
+    ):
+        st.session_state['selected_preset'] = preset_id
+        st.session_state['custom_parameters'] = False
+        st.rerun()
+    
+    i += 1
+
+# Show description of current preset
+if not st.session_state.get('custom_parameters', False):
+    st.sidebar.info(f"**{current_preset_name}**: {presets[st.session_state['selected_preset']]['description']}")
+
+# Toggle for custom parameters
+custom_params = st.sidebar.checkbox("Customize Parameters", value=st.session_state.get('custom_parameters', False))
+if custom_params != st.session_state.get('custom_parameters', False):
+    st.session_state['custom_parameters'] = custom_params
+    st.rerun()
+
+# Get parameters based on preset or use custom
+if st.session_state.get('custom_parameters', False):
+    # Sidebar parameters for custom configuration
+    st.sidebar.header("Custom Parameters")
+    
+    # Demographics
+    st.sidebar.subheader("Population")
+    num_agents = st.sidebar.slider("Number of Agents", 100, 1000, 200, 100)
+    
+    # Economic Parameters
+    st.sidebar.subheader("Economic Parameters")
+    initial_interest_rate = st.sidebar.slider("Initial Interest Rate (%)", 1.0, 10.0, 3.0, 0.5)
+    base_return_rate = st.sidebar.slider("Base Investment Return (%)", 3.0, 15.0, 7.0, 0.5)
+    income_volatility = st.sidebar.slider("Income Volatility", 0.1, 0.5, 0.2, 0.05)
+    initial_inflation_rate = st.sidebar.slider("Initial Inflation Rate (%)", 0.0, 10.0, 2.0, 0.5)
+    
+    # Behavioral Parameters
+    st.sidebar.subheader("Behavioral Parameters")
+    risk_aversion_mean = st.sidebar.slider("Average Risk Aversion", 0.0, 1.0, 0.5, 0.1)
+    time_preference_mean = st.sidebar.slider("Average Time Preference (Patience)", 0.0, 1.0, 0.7, 0.1)
+    consumption_preference_mean = st.sidebar.slider("Average Consumption Preference", 0.3, 0.8, 0.6, 0.05)
+    
+    # Policy Parameters
+    st.sidebar.subheader("Policy Parameters")
+    tax_rate = st.sidebar.slider("Income Tax Rate (%)", 0.0, 50.0, 25.0, 5.0) / 100
+    wealth_tax_rate = st.sidebar.slider("Wealth Tax Rate (%)", 0.0, 5.0, 0.0, 0.5) / 100
+    ubi_amount = st.sidebar.slider("Universal Basic Income (Annual $)", 0, 50000, 0, 1000)
+    
+    # Social Network
+    st.sidebar.subheader("Social Network")
+    social_influence_strength = st.sidebar.slider("Social Influence Strength", 0.0, 1.0, 0.3, 0.1)
+    
+    # Credit Market
+    st.sidebar.subheader("Credit Market")
+    max_loan_to_income_ratio = st.sidebar.slider("Max Loan-to-Income Ratio", 1.0, 10.0, 5.0, 0.5)
+    credit_availability = st.sidebar.slider("Credit Availability", 0.0, 1.0, 0.7, 0.1)
+else:
+    # Use preset parameters
+    preset_params = presets[st.session_state['selected_preset']]['parameters']
+    
+    # Extract parameters from preset
+    num_agents = preset_params['num_agents']
+    initial_interest_rate = preset_params['interest_rate'] * 100
+    base_return_rate = preset_params['base_return_rate'] * 100
+    income_volatility = preset_params['income_volatility']
+    initial_inflation_rate = preset_params['inflation_rate'] * 100
+    risk_aversion_mean = preset_params['risk_aversion_mean']
+    time_preference_mean = preset_params['time_preference_mean']
+    consumption_preference_mean = preset_params['consumption_preference_mean']
+    tax_rate = preset_params['tax_rate']
+    wealth_tax_rate = preset_params['wealth_tax_rate']
+    ubi_amount = preset_params['ubi_amount']
+    social_influence_strength = preset_params['social_influence_strength']
+    max_loan_to_income_ratio = preset_params['max_loan_to_income_ratio']
+    credit_availability = preset_params['credit_availability']
 
 # Create tabs for different visualizations
 tab1, tab2, tab3, tab4 = st.tabs(["Simulation Results", "Wealth Distribution", "Economic Indicators", "Agent Details"])
